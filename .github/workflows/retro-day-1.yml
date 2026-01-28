@@ -1,0 +1,53 @@
+# create a workflow with a name of your choice
+# it should be triggered whenever there is a push on the main branch
+# it should be triggered manually too
+
+# define 2 environment variables: VAR1 and VAR2
+# VAR1 is boolean
+# VAR2 is text
+
+# it should have 2 jobs
+# 1 st job should contain 2 steps
+# step 1:
+# -should be executed only if VAR1 is true
+# - echo the VAR2
+# step 2:
+# - echo your name
+
+# 2nd job should be eexecuted only if job1 is executed successfully
+# job2 has only 1 step - you can do here anything you, e.g. echo "Good morning"
+
+
+name: My New Workflow
+
+# Trigger on push to main and manual dispatch
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Defining global environment variables
+env:
+  VAR1: true
+  VAR2: "This is the text from VAR2"
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Conditional Echo
+        # Expressions in 'if' treat the string 'true' as a boolean
+        if: env.VAR1 == 'true'
+        run: echo "${{ env.VAR2 }}"
+
+      - name: Step 2 - Identity
+        run: echo "My name is Mustafa"
+
+  job2:
+    # This ensures job2 only runs if job1 completes successfully
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Greeting
+        run: echo "Good morning"
